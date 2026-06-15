@@ -6,7 +6,8 @@
       "title": "Skill Maintenance",
       "description": "Skills for reviewing, improving, and preserving agent skill guidance.",
       "skills": [
-        "skill-retrospective"
+        "skill-retrospective",
+        "skills-sh-registration"
       ]
     }
   ]
