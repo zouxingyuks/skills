@@ -3,6 +3,13 @@
   "notGrouped": "bottom",
   "groupings": [
     {
+      "title": "Human-in-the-loop Coding",
+      "description": "Skills for quick checkpoints while a human is actively steering implementation.",
+      "skills": [
+        "fast-navigator"
+      ]
+    },
+    {
       "title": "Skill Maintenance",
       "description": "Skills for reviewing, improving, and preserving agent skill guidance.",
       "skills": [
