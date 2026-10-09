@@ -1,0 +1,77 @@
+{
+  "skill_name": "create-github-pr",
+  "evals": [
+    {
+      "id": 1,
+      "name": "existing-pr-template-preserved",
+      "description": "A repository has a PR template and title lint. The agent must preserve the template body instead of inventing a shorter PR body.",
+      "prompt": "Create a PR for my current branch in a repo that has `.github/PULL_REQUEST_TEMPLATE.md` and a workflow enforcing English PR titles with `--issue=#123`.",
+      "trap": "Agent reads only title lint and labeler rules, then drafts a custom Summary/Changes/Motivation body instead of filling the repository PR template.",
+      "expected_output": "The agent reads the repository PR template, uses it as the authoritative PR body structure, keeps the template headings and checklists, and shows the template source path in the confirmation checkpoint.",
+      "files": [
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        ".github/workflows/pr-title-lint.yml",
+        ".github/labeler.yml"
+      ],
+      "expectations": [
+        "Reads `.github/PULL_REQUEST_TEMPLATE.md` before drafting the PR body.",
+        "Preserves repository template headings, checklist wording, and section order in the draft.",
+        "Does not replace the repository template with a generic Summary/Changes/Motivation body.",
+        "Shows `Template source: .github/PULL_REQUEST_TEMPLATE.md` in the PR confirmation checkpoint.",
+        "After creation, verifies the PR body still contains every required template heading."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "no-pr-template-fallback",
+      "description": "A repository has no PR or merge template. The agent should use the built-in fallback body and disclose why.",
+      "prompt": "Open a PR for this branch. This repo has no `.github/PULL_REQUEST_TEMPLATE.md`, no `PULL_REQUEST_TEMPLATE.md`, and no pull request template directory.",
+      "trap": "Agent either stops unnecessarily because no template exists or invents an ad-hoc body without telling the user fallback was used.",
+      "expected_output": "The agent uses the built-in fallback PR body with Summary, Test Results, Risks and Rollback, Related Issues, and Affected Areas, and states that fallback is used because no repository PR template exists.",
+      "files": [],
+      "expectations": [
+        "Checks supported PR template locations before deciding fallback is needed.",
+        "Uses the built-in fallback sections: `Summary`, `Test Results`, `Risks and Rollback`, `Related Issues`, `Affected Areas`.",
+        "Shows `Template source: Built-in fallback` and the missing-template reason in the confirmation checkpoint.",
+        "Verifies the created PR body retains the fallback headings."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "language-complaint-template-check",
+      "description": "A user says the PR language or format is wrong. The agent must re-check templates and recent valid PRs instead of blindly converting the body to English.",
+      "prompt": "第一个 PR 的语言不对，你没按照我们要求的 PR 规范来。修一下。",
+      "trap": "Agent assumes the fix is to convert the PR body to English because the title lint requires English-compatible titles.",
+      "expected_output": "The agent distinguishes title rules from PR body language, re-reads the repository PR template and recent valid PRs, preserves template headings, and only changes language/format according to that evidence.",
+      "files": [
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        ".github/workflows/pr-title-lint.yml"
+      ],
+      "expectations": [
+        "Does not infer English PR body language from English-only title lint.",
+        "Re-reads PR template before editing an existing PR body.",
+        "Uses recent valid PRs only as style/language evidence, not as an override for the template.",
+        "Explains the correction in terms of template conformance rather than arbitrary language conversion."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "title-lint-requires-issue",
+      "description": "A repository title lint requires `--issue=#number`. The agent must create or verify an issue before PR creation.",
+      "prompt": "Create a PR for this branch. There is no issue number in my request, branch name, or commit messages, but CI requires PR titles like `fix: something --issue=#123`.",
+      "trap": "Agent drafts a PR without an issue, guesses a semantically related issue, or asks for review without creating the required issue.",
+      "expected_output": "The agent treats issue association as mandatory, drafts a new issue using repository issue templates or the built-in issue fallback, confirms creation with the user, verifies the created issue, and then drafts the PR title with the real issue number.",
+      "files": [
+        ".github/workflows/pr-title-lint.yml",
+        ".github/ISSUE_TEMPLATE/"
+      ],
+      "expectations": [
+        "Does not semantically guess a related issue.",
+        "Creates a new issue when no explicit issue number is confirmed and project rules require one.",
+        "Uses repository issue templates when present; otherwise uses the built-in issue fallback sections.",
+        "Shows issue template source or fallback reason in the issue confirmation checkpoint.",
+        "Verifies the created issue before using its number in the PR title."
+      ]
+    }
+  ]
+}

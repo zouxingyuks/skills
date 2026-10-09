@@ -20,6 +20,8 @@ Create a GitHub pull request for the current branch while respecting repository 
 - Default issue and PR body language is Chinese unless the user or repository conventions clearly require another language.
 - PR titles must follow repository rules even when the body language is Chinese.
 - Prefer repository PR or merge templates over the skill fallback PR body. Use the fallback PR body only when no repository PR template exists.
+- Do not infer PR body language from title lint. Title rules constrain the title; body language follows repository templates, recent valid PRs, user instructions, then fallback defaults.
+- Every issue and PR confirmation must show the template source path, or `Built-in fallback` plus the reason fallback is used.
 
 ## When to Use
 
@@ -166,23 +168,26 @@ Default issue language is Chinese unless repository templates or user instructio
 Fallback issue body:
 
 ```markdown
-## 背景
+## 问题背景 / Problem Context
 
 [为什么需要这次变更]
 
-## 目标
+## 预期结果 / Expected Outcome
 
-[这次 PR 要解决或交付什么]
+[Issue 或 PR 应解决或交付什么]
 
-## 变更范围
+## 范围 / Scope
 
-- [主要变更 1]
-- [主要变更 2]
+- [范围内]
+- [范围外，如有]
 
-## 验收标准
+## 验收标准 / Validation Expectations
 
-- [可验证结果 1]
-- [可验证结果 2]
+- [可验证结果]
+
+## 补充信息 / Additional Context
+
+[链接、约束或 N/A]
 ```
 
 ### Issue Confirmation
@@ -193,6 +198,7 @@ Before creating the issue, present:
 I'll create an issue with:
 - Repository: <owner/repo>
 - Template: <template name or fallback>
+- Template source: <path, or Built-in fallback because no repository issue template exists>
 - Title: <title>
 - Language: <language>
 - Labels: <labels>
@@ -220,7 +226,7 @@ Immediately verify it:
 gh issue view <issue-number> --repo <owner/repo> --json number,title,body,labels,state,url
 ```
 
-If created content differs from the confirmed draft, update the issue before continuing.
+If created content differs from the confirmed draft, or if the body lost the selected template headings, update the issue before continuing.
 
 ## Step 4: Read PR Conventions
 
@@ -255,6 +261,7 @@ Parse:
 - Target branch restrictions.
 - Auto-label rules based on changed files.
 - PR body template fields and required checklists.
+- PR body language evidence from the template and recent valid PRs, when language is unclear or the user reports a language/template mismatch.
 
 If PR target branch rules differ from the base used for diff analysis, re-run analysis against the intended PR base before drafting.
 
@@ -279,6 +286,9 @@ Body rules:
 3. Use a closing keyword such as `closes #<issue-number>` only when the PR base is the default branch and the user explicitly confirms they want the issue closed when the PR merges.
 4. If the template has an issue-closing field but auto-close is not confirmed, fill it with a non-closing issue reference instead of `closes` or `fixes`.
 5. If no repository PR template exists, use the skill fallback PR body in `references/fallback-pr-template.md`.
+6. Preserve repository template headings, checklist wording, section order, and bilingual labels exactly when present.
+7. Do not invent a shorter `Summary / Changes / Motivation` body when a repository PR template exists.
+8. If the user says the PR language or format is wrong, re-read the PR template and recent valid PRs before editing; do not blindly convert the body to English.
 
 Fallback PR body: `references/fallback-pr-template.md`
 
@@ -296,6 +306,7 @@ Title: <title>
 Base: <base-branch>
 Head: <head-owner>:<branch-name>
 Issue: #<issue-number> <issue-title>
+Template source: <path, or Built-in fallback because no repository PR template exists>
 
 Body:
 <full body>
@@ -380,6 +391,8 @@ Confirm:
 - Base matches the analyzed base.
 - Head matches the pushed branch.
 - The PR body links or closes the confirmed issue.
+- The PR body still contains every required heading from the repository template, or every fallback heading when fallback was used.
+- The PR body language matches the template, recent valid PRs, and confirmed draft.
 - Expected labels are either applied or described as auto-labeler predictions.
 
 ## Error Handling
@@ -413,7 +426,7 @@ Stop PR drafting, fetch the intended base, re-run diff analysis, and regenerate 
 
 ### Missing templates
 
-Use fallback Chinese issue or PR body only when repository templates do not exist or blank content is allowed.
+Use fallback issue or PR bodies only when repository templates do not exist or blank content is allowed. State the fallback reason in the confirmation checkpoint.
 
 ## Final Report
 

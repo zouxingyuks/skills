@@ -2,25 +2,42 @@
 
 Use this template only when the target repository has no PR or merge template.
 
-```markdown
-## 概述
+````markdown
+## Summary
 
-[2-3 句概述变更内容和原因]
+[2-3 sentences describing what changed and why]
 
-## 关联 Issue
+## Test Results
 
-Related: #<issue-number>
+- [ ] Ran relevant unit tests
+- [ ] Ran relevant integration tests
+- [ ] Ran frontend checks or build
+- [ ] Completed manual verification
+- [ ] Not tested; reason: [reason]
 
-## 变更内容
+Commands and results:
 
-- [主要变更 1]
-- [主要变更 2]
-
-## 验证
-
-- [已执行或建议执行的验证]
-
-## 风险与影响
-
-- [兼容性、部署、回滚、用户影响；没有则写“无明显风险”]
+```text
+[commands and outcomes]
 ```
+
+## Risks and Rollback
+
+- Risks: [compatibility, deployment, user impact, or none]
+- Rollback plan: [how to revert safely]
+
+## Related Issues
+
+- Related: #<issue-number>
+
+## Affected Areas
+
+- [ ] API contract or route
+- [ ] permission / auth
+- [ ] storage / migration
+- [ ] deployment / config
+- [ ] frontend UI
+- [ ] docs only
+
+Impact notes: [scope and boundaries]
+````
